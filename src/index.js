@@ -1,4 +1,31 @@
-import message from './my-module';
+/* eslint-disable no-console */
+import { GraphQLServer } from 'graphql-yoga';
 
-console.log('oi mate');
-console.log(message);
+// Type definitions (schema)
+const typeDefs = `
+  type Query {
+    hello: String!
+    name: String!
+  }
+`;
+
+// Resolvers
+const resolvers = {
+  Query: {
+    hello() {
+      return 'This is my first query!';
+    },
+    name() {
+      return 'Javi';
+    }
+  }
+};
+
+const server = new GraphQLServer({
+  typeDefs,
+  resolvers
+});
+
+server.start(() => {
+  console.log('The server is up');
+});
