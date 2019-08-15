@@ -7,31 +7,42 @@ import { GraphQLServer } from 'graphql-yoga';
 // Type definitions (schema)
 const typeDefs = `
   type Query {
+    me: User!
+    post: Post!
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+    age: Int
+  }
+
+  type Post {
+    id: ID!
     title: String!
-    price: Float!
-    releaseYear: Int
-    rating: Float,
-    inStock: Boolean!
+    body: String!
+    published: Boolean!
   }
 `;
 
 // Resolvers
 const resolvers = {
   Query: {
-    title() {
-      return 'Twister';
+    me() {
+      return {
+        id: '1234030',
+        name: 'Javi',
+        email: 'javi@example.com'
+      };
     },
-    price() {
-      return 9.99;
-    },
-    releaseYear() {
-      return null;
-    },
-    rating() {
-      return 9.5;
-    },
-    inStock() {
-      return true;
+    post() {
+      return {
+        id: 'a4032',
+        title: 'post title',
+        body: 'post body',
+        published: true
+      };
     }
   }
 };
