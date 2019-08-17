@@ -7,18 +7,18 @@ import { GraphQLServer } from 'graphql-yoga';
 // Demo user data
 const users = [
   {
-    id: '1',
+    id: '11',
     name: 'Javi',
     email: 'javi@example.com',
     age: 30
   },
   {
-    id: '2',
+    id: '22',
     name: 'Miguel',
     email: 'miguel@example.com'
   },
   {
-    id: '2',
+    id: '33',
     name: 'Manolo',
     email: 'manolo@example.com',
     age: 33
@@ -31,19 +31,50 @@ const posts = [
     id: '1',
     title: 'first post title',
     body: 'first post body',
-    published: true
+    published: true,
+    author: '11'
   },
   {
     id: '2',
     title: 'second post title',
     body: 'second post body',
-    published: false
+    published: false,
+    author: '22'
   },
   {
     id: '3',
     title: 'third post title',
     body: 'third post body',
-    published: true
+    published: true,
+    author: '33'
+  }
+];
+
+// Demo comments data
+const comments = [
+  {
+    id: '1',
+    text: 'first comment',
+    author: '11',
+    post: '1'
+  },
+  {
+    id: '2',
+    text: 'second comment',
+    author: '11',
+    post: '2'
+  },
+  {
+    id: '3',
+    text: 'third comment',
+    author: '22',
+    post: '3'
+  },
+  {
+    id: '4',
+    text: 'fourth comment',
+    author: '33',
+    post: '3'
   }
 ];
 
@@ -54,6 +85,7 @@ const typeDefs = `
     me: User!
     post: Post!
     posts(query: String): [Post!]!
+    comments: [Comment!]!
   }
 
   type User {
@@ -61,6 +93,8 @@ const typeDefs = `
     name: String!
     email: String!
     age: Int
+    posts: [Post!]!
+    comments: [Comment!]!
   }
 
   type Post {
@@ -68,6 +102,15 @@ const typeDefs = `
     title: String!
     body: String!
     published: Boolean!
+    author: User!
+    comments: [Comment!]!
+  }
+
+  type Comment {
+    id: ID!
+    text: String!
+    author: User!
+    post: Post!
   }
 `;
 
@@ -106,6 +149,33 @@ const resolvers = {
           post.body.toLowerCase().includes(query.toLowerCase())
         );
       });
+    },
+    comments(parent, args, ctx, info) {
+      return comments;
+    }
+  },
+  Post: {
+    author(parent, args, ctx, info) {
+      return users.find(user => user.id === parent.author);
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter(comment => comment.post === parent.id);
+    }
+  },
+  User: {
+    posts(parent, args, ctx, info) {
+      return posts.filter(post => post.author === parent.id);
+    },
+    comments(parent, args, ctx, info) {
+      return comments.filter(comment => comment.author === parent.id);
+    }
+  },
+  Comment: {
+    author(parent, args, ctx, info) {
+      return users.find(user => user.id === parent.author);
+    },
+    post(parent, args, ctx, info) {
+      return posts.find(post => post.id === parent.post);
     }
   }
 };
